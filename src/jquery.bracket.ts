@@ -779,13 +779,13 @@ interface Options {
         var sEl = $('<div class="score" data-resultid="result-' + rId + '"></div>')
         var score
         if (!team.name || !isReady) {
-          score = '--'
+          score = "&nbsp;"
         }
         else {
           if (!isNumber(team.score)) {
-            score = '--'
+            score = "&nbsp;"
           } else {
-            score = team.score
+            score = "&nbsp;"
           }
         }
         sEl.append(score)
@@ -836,59 +836,23 @@ interface Options {
             editor()
           })
           if (team.name) {
-            sEl.addClass('editable')
-            sEl.click(function() {
+            nEl.click(function() {
               var span = $(this)
 
-              function editor() {
-                span.unbind()
+              function promote() {
 
-                var score
-                if (!isNumber(team.score))
-                  score = '0'
-                else
-                  score = span.text()
-
-                var input = $('<input type="text">')
-                input.val(score)
-                span.html(input)
-
-                input.focus().select()
-                input.keydown(function(e) {
-                  if (!isNumber($(this).val()))
-                    $(this).addClass('error')
+                for ( var i = 0; i < data.length; i++ )
+                {
+                  if ( data[i].idx == team.idx )
+                    data[i].score = 1;
                   else
-                    $(this).removeClass('error')
+                    data[i].score = -1;
+                }
 
-                  var key = (e.keyCode || e.which)
-                  if (key === 9 || key === 13 || key === 27) {
-                    e.preventDefault()
-                    $(this).blur()
-                    if (key === 27)
-                      return
-
-                    var next = topCon.find('div.score[data-resultid=result-' + (rId + 1) + ']')
-                    if (next)
-                      next.click()
-                  }
-                })
-                input.blur(function() {
-                  var val = input.val()
-                  if ((!val || !isNumber(val)) && !isNumber(team.score))
-                    val = '0'
-                  else if ((!val || !isNumber(val)) && isNumber(team.score))
-                    val = team.score
-
-                  span.html(val)
-                  if (isNumber(val) && score !== parseInt(val, 10)) {
-                    team.score = parseInt(val, 10)
-                    renderAll(true)
-                  }
-                  span.click(editor)
-                })
+                renderAll(true)
               }
 
-              editor()
+              promote()
             })
           }
         }
